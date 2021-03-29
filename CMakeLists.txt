@@ -104,6 +104,28 @@ math(EXPR TAGLIB_SOVERSION_PATCH "${TAGLIB_SOVERSION_REVISION}")
 
 include(ConfigureChecks.cmake)
 
+# Determine whether zlib is installed.
+option(WITH_ZLIB "Build with ZLIB" ON)
+
+if(WITH_ZLIB)
+  if(NOT ZLIB_SOURCE)
+    find_package(ZLIB)
+    if(ZLIB_FOUND)
+      set(HAVE_ZLIB 1)
+      set(ZLIB_LIBRARIES_FLAGS -lz)
+    else()
+      set(HAVE_ZLIB 0)
+    endif()
+  endif()
+  
+  if(NOT HAVE_ZLIB AND ZLIB_SOURCE)
+    set(HAVE_ZLIB 1)
+    set(HAVE_ZLIB_SOURCE 1)
+  endif()
+else()
+  set(HAVE_ZLIB 0)
+endif()
+
 if(NOT WIN32)
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/taglib-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/taglib-config")
   install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/taglib-config" DESTINATION "${BIN_INSTALL_DIR}")
